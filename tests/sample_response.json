@@ -1,0 +1,150 @@
+{
+    "total": 203,
+    "p": 1,
+    "ps": 100,
+    "paging": {
+        "pageIndex": 1,
+        "pageSize": 100,
+        "total": 203
+    },
+    "effortTotal": 846,
+    "issues": [
+        {
+            "key": "e935640d-ecf2-4a0b-89cd-b99b46143b22",
+            "rule": "python:S6779",
+            "severity": "BLOCKER",
+            "component": "peersuma-project:intervalmaker/app.py",
+            "project": "peersuma-project",
+            "line": 22,
+            "hash": "d1d879a08f8484a7bd821fcfd45de143",
+            "textRange": {
+                "startLine": 22,
+                "endLine": 22,
+                "startOffset": 17,
+                "endOffset": 37
+            },
+            "flows": [
+                {
+                    "locations": [
+                        {
+                            "component": "peersuma-project:intervalmaker/app.py",
+                            "textRange": {
+                                "startLine": 22,
+                                "endLine": 22,
+                                "startOffset": 0,
+                                "endOffset": 14
+                            },
+                            "msg": "Assignment to sensitive property.",
+                            "msgFormattings": []
+                        }
+                    ]
+                }
+            ],
+            "status": "OPEN",
+            "message": "Don't disclose \"Flask\" secret keys.",
+            "effort": "30min",
+            "debt": "30min",
+            "author": "",
+            "tags": [
+                "cwe"
+            ],
+            "creationDate": "2024-05-26T05:01:51+0000",
+            "updateDate": "2024-05-26T05:01:51+0000",
+            "type": "VULNERABILITY",
+            "scope": "MAIN",
+            "quickFixAvailable": false,
+            "messageFormattings": [],
+            "codeVariants": [],
+            "cleanCodeAttribute": "TRUSTWORTHY",
+            "cleanCodeAttributeCategory": "RESPONSIBLE",
+            "impacts": [
+                {
+                    "softwareQuality": "SECURITY",
+                    "severity": "HIGH"
+                }
+            ],
+            "issueStatus": "OPEN"
+        },
+        {
+            "key": "056ab8d0-034b-4938-a352-b71af501f0f0",
+            "rule": "python:S117",
+            "severity": "MINOR",
+            "component": "peersuma-project:intervalmaker/app.py",
+            "project": "peersuma-project",
+            "line": 27,
+            "hash": "ba8a1b7a44218a364980b61902f4d347",
+            "textRange": {
+                "startLine": 27,
+                "endLine": 27,
+                "startOffset": 17,
+                "endOffset": 24
+            },
+            "flows": [],
+            "status": "OPEN",
+            "message": "Rename this parameter \"keyName\" to match the regular expression ^[_a-z][a-z0-9_]*$.",
+            "effort": "2min",
+            "debt": "2min",
+            "author": "",
+            "tags": [
+                "convention"
+            ],
+            "creationDate": "2024-05-26T05:01:51+0000",
+            "updateDate": "2024-05-26T05:01:51+0000",
+            "type": "CODE_SMELL",
+            "scope": "MAIN",
+            "quickFixAvailable": false,
+            "messageFormattings": [],
+            "codeVariants": [],
+            "cleanCodeAttribute": "IDENTIFIABLE",
+            "cleanCodeAttributeCategory": "CONSISTENT",
+            "impacts": [
+                {
+                    "softwareQuality": "MAINTAINABILITY",
+                    "severity": "LOW"
+                }
+            ],
+            "issueStatus": "OPEN"
+        },
+        {
+            "key": "6754b63f-7e61-4585-83be-c8683c448c6e",
+            "rule": "python:S1542",
+            "severity": "MAJOR",
+            "component": "peersuma-project:intervalmaker/app.py",
+            "project": "peersuma-project",
+            "line": 27,
+            "hash": "ba8a1b7a44218a364980b61902f4d347",
+            "textRange": {
+                "startLine": 27,
+                "endLine": 27,
+                "startOffset": 4,
+                "endOffset": 16
+            },
+            "flows": [],
+            "status": "OPEN",
+            "message": "Rename function \"createKeyAWS\" to match the regular expression ^[a-z_][a-z0-9_]*$.",
+            "effort": "10min",
+            "debt": "10min",
+            "author": "",
+            "tags": [
+                "convention"
+            ],
+            "creationDate": "2024-05-26T05:01:51+0000",
+            "updateDate": "2024-05-26T05:01:51+0000",
+            "type": "CODE_SMELL",
+            "scope": "MAIN",
+            "quickFixAvailable": false,
+            "messageFormattings": [],
+            "codeVariants": [],
+            "cleanCodeAttribute": "IDENTIFIABLE",
+            "cleanCodeAttributeCategory": "CONSISTENT",
+            "impacts": [
+                {
+                    "softwareQuality": "MAINTAINABILITY",
+                    "severity": "MEDIUM"
+                }
+            ],
+            "issueStatus": "OPEN"
+        }
+    ],
+    "facets": []
+}

@@ -1,0 +1,4 @@
+include README.md
+include redcoffee.py
+include styling.py
+include constants.py
