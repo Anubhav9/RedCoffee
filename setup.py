@@ -21,7 +21,9 @@ setup(
     install_requires=[
         'click',
         'reportlab',
-        'pytest'
+        'pytest',
+        'requests',
+        'setuptools'
     ],
     entry_points='''
         [console_scripts]
