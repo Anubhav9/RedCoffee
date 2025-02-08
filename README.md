@@ -10,6 +10,12 @@ To install RedCoffee, you can use pip. First, ensure you have Python and pip ins
 pip install redcoffee
 ```
 
+Disclaimer: Due to change in response structure of SonarQube API, I had to push non backward compatible change. Hence, it is advisable to upgrade to redcoffee=1.1
+```bash
+pip install redcoffee==1.1
+```
+
+
 ## Pre Requisites
 
 The SonarQube analysis for the project should have been already done.
@@ -19,7 +25,7 @@ The SonarQube analysis for the project should have been already done.
 Please run the following command to generate the PDF Report
 
 ```bash
-redcoffee generatepdf --host={YOUR_SONARQUBE_HOST_NAME} --project={SONARQUBE_PROJECT_KEY} --path={PATH WHERE PDF FILE IS TO BE STORED} --token={SONARQUBE_GLOBAL_ANALYSIS_TOKEN}
+redcoffee generatepdf --host=${YOUR_SONARQUBE_HOST_NAME} --project=${SONARQUBE_PROJECT_KEY} --path=${PATH WHERE PDF FILE IS TO BE STORED} --token=${SONARQUBE_GLOBAL_ANALYSIS_TOKEN}
 ```
 
 ## Maintenance
