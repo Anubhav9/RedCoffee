@@ -10,7 +10,7 @@ To install RedCoffee, you can use pip. First, ensure you have Python and pip ins
 pip install redcoffee
 ```
 
-Disclaimer: Due to change in response structure of SonarQube API, I had to push non backward compatible change. Hence, it is advisable to upgrade to redcoffee=1.1
+Disclaimer: Due to some changes in response structure of SonarQube API, I had to push a non backward compatible change. Hence, it is advisable to upgrade to redcoffee=1.1
 ```bash
 pip install redcoffee==1.1
 ```
