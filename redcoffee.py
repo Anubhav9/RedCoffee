@@ -286,7 +286,7 @@ def issue_summary_overview(bug_list, vulnerability_list, code_smell_list, duplic
         Paragraph(str(bug_list), normal_style),
         Paragraph(str(vulnerability_list), normal_style),
         Paragraph(str(code_smell_list), normal_style),
-        Paragraph("0%", normal_style),
+        Paragraph(str(duplication_list), normal_style),
     ])
 
     # Create table
