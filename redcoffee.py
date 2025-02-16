@@ -101,6 +101,8 @@ def draw_severity_icon(severity):
 
 def create_issues_report(file_path, host_name, auth_token, project_name):
     response = get_reported_issues_by_sonarqube(host_name, auth_token, project_name)
+    duplication_response=get_duplication_density(host_name,project_name, auth_token)
+    duplication_map=get_duplication_map(host_name,project_name,auth_token)
     if (response == ""):
         logging.error("We are sorry, we're having trouble generating your report")
         return
@@ -137,7 +139,7 @@ def create_issues_report(file_path, host_name, auth_token, project_name):
     # Summary Section
     elements.append(Paragraph(constants.TABLE_HEADER_REPORT_SUMMARY, title_style))
     report_summary = issue_summary_overview(size_of_bug_list, size_of_vulnerability_list, size_of_code_smell_list,
-                                            "0.0%")
+                                            duplication_response)
     elements.append(report_summary)
     elements.append(Paragraph("", title_style))
 
@@ -145,8 +147,15 @@ def create_issues_report(file_path, host_name, auth_token, project_name):
     elements.append(Paragraph(constants.SUBHEADER_DOCUMENT, subtitle_style))
     table = actual_table_content_data(component_list, fix_list, line_number_list, impact, issue_type_list)
     elements.append(table)
-    doc.build(elements)
+    elements.append(Paragraph("", title_style))
 
+    # Duplication
+    if(len(duplication_map)>0):
+        elements.append(Paragraph(constants.SUBHEADER_DUPLICATION_DOCUMENT, subtitle_style))
+        table=duplication_table(duplication_map=duplication_map)
+        elements.append(table)
+
+    doc.build(elements)
 
 def create_basic_project_details_table(project_name):
     """
