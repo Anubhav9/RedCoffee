@@ -213,7 +213,7 @@ def actual_table_content_data(component_list, fix_list, line_number_list, impact
 
     # Table content
     print("Total Issues detected are " + str(len(component_list)))
-    for i in range(0, len(component_list) - 1):
+    for i in range(0, len(component_list)):
         severity_icon = draw_severity_icon(impact[i])
         description = fix_list[i]
         file_name = "/".join(component_list[i].split(":")[1:])
