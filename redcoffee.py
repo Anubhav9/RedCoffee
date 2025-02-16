@@ -226,6 +226,27 @@ def actual_table_content_data(component_list, fix_list, line_number_list, impact
     return table
 
 
+def duplication_table(duplication_map):
+    normal_style = styling.NORMAL_STYLE
+    header_style = styling.HEADER_STYLE
+    data = [
+        [
+         Paragraph(constants.TABLE_HEADER_FILE_NAME, header_style),
+         Paragraph(constants.TABLE_HEADER_DUPLICATED_LINES, header_style)]
+    ]
+    for i,j in duplication_map.items():
+        file_name=i
+        duplicated_lines=j
+        data.append([
+            Paragraph(file_name, normal_style),
+            Paragraph(duplicated_lines, normal_style),
+        ])
+
+    table = Table(data, colWidths=[3 * inch, 1 * inch])
+    table.setStyle(styling.TABLE_STYLE)
+    return table
+
+
 def issue_summary_overview(bug_list, vulnerability_list, code_smell_list, duplication_list):
     """
     Creates the table content for the executive summary of the report
