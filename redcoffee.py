@@ -265,6 +265,51 @@ def issue_summary_overview(bug_list, vulnerability_list, code_smell_list, duplic
     return table
 
 
+def get_duplication_density(host_name,project_name,auth_token):
+    if "localhost" in host_name:
+        protocol_type = "http://"
+    else:
+        protocol_type = "https://"
+    DUPLICATION_URL=f"{protocol_type}{host_name}/api/measures/component?component={project_name}&metricKeys=duplicated_lines_density"
+    logging.info(f"Generated Duplication URL is :: {DUPLICATION_URL}")
+    auth = HTTPBasicAuth(auth_token, "")
+    duplication_response=requests.get(url=DUPLICATION_URL,auth=auth)
+    if duplication_response.status_code!=200:
+        logging.error(f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
+        logging.error(f"INFO : This would not impact your report generation but duplication % will be defaulted as Zero")
+        return 0
+    else:
+        duplication_response_json=duplication_response.json()
+        duplicated_line_density=duplication_response_json["component"]["measures"][0]["value"]
+        logging.info(f"The duplication % received is :: {duplicated_line_density}")
+        return duplicated_line_density
+
+
+def get_duplication_map(host_name,project_name,auth_token):
+    if "localhost" in host_name:
+        protocol_type = "http://"
+    else:
+        protocol_type = "https://"
+    DUPLICATION_URL = f"{protocol_type}{host_name}/api/measures/component_tree?component={project_name}&metricKeys=duplicated_lines"
+    logging.info(f"Generated Duplication URL is :: {DUPLICATION_URL}")
+    auth = HTTPBasicAuth(auth_token, "")
+    duplication_response=requests.get(url=DUPLICATION_URL,auth=auth)
+    if duplication_response.status_code!=200:
+        logging.error(f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
+        logging.error(f"INFO : This would not impact your report generation but duplication table won't be visible to you")
+        return {}
+    else:
+        duplication_map={}
+        duplication_response_json=duplication_response.json()
+        duplication_files_component=duplication_response_json["components"]
+        for i in range(0,len(duplication_files_component)):
+            duplicated_lines_count=duplication_files_component[i]["measures"][0]["value"]
+            if int(duplicated_lines_count)>0:
+                file_name=duplication_files_component[i]["path"]
+                duplication_map.update({file_name:duplicated_lines_count})
+        print(duplication_map)
+        return duplication_map
+
 @click.group()
 def cli():
     pass
