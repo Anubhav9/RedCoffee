@@ -1,3 +1,5 @@
+[![PyPI Downloads](https://static.pepy.tech/badge/redcoffee)](https://pepy.tech/projects/redcoffee)
+
 # RedCoffee
 
 RedCoffee is a command-line tool designed to manage SonarQube reports easily. It allows you to configure the SonarQube analysis token and generate PDF reports from SonarQube analysis data.
