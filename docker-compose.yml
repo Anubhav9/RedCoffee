@@ -1,0 +1,23 @@
+version: "3"
+services:
+  redcoffee-postgres-container:
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: redcoffee-db
+
+  redcoffee-sonarqube-container:
+    image: sonarqube:community
+    restart: always
+    ports:
+      - 9000:9000
+    environment:
+      SONAR_JDBC_URL: "jdbc:postgresql://redcoffee-postgres-container:5432/redcoffee-db"
+      SONAR_JDBC_USERNAME: root
+      SONAR_JDBC_PASSWORD: password123
+    depends_on:
+      - redcoffee-postgres-container
