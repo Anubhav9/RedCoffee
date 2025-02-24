@@ -9,6 +9,8 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password123
       POSTGRES_DB: redcoffee-db
+    networks:
+      - redcoffee-network
 
   redcoffee-sonarqube-container:
     image: sonarqube:community
@@ -19,5 +21,10 @@ services:
       SONAR_JDBC_URL: "jdbc:postgresql://redcoffee-postgres-container:5432/redcoffee-db"
       SONAR_JDBC_USERNAME: root
       SONAR_JDBC_PASSWORD: password123
+    networks:
+      - redcoffee-network
     depends_on:
       - redcoffee-postgres-container
+
+networks:
+  redcoffee-network:
