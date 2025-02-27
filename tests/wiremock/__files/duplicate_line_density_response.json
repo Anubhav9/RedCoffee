@@ -1,0 +1,14 @@
+{
+    "component": {
+        "key": "car-loan-portal",
+        "name": "car-loan-portal",
+        "qualifier": "TRK",
+        "measures": [
+            {
+                "metric": "duplicated_lines_density",
+                "value": "15.0",
+                "bestValue": false
+            }
+        ]
+    }
+}

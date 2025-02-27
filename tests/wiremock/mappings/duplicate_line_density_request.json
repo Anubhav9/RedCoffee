@@ -1,0 +1,24 @@
+{
+  "request": {
+    "urlPath": "/api/measures/component",
+    "method": "GET",
+    "headers": {
+      "Authorization":{
+        "equalTo": "Basic c3F1X2FhOTQ4ODAwNzEyNWIwOWM0NmU4ZTJhMTZhNWJjY2Q4MjI3MzhiYzI6"
+      }
+    },
+    "queryParameters":{
+      "component": {
+        "equalTo": "car-loan-portal"
+      },
+      "metricKeys": {
+        "equalTo": "duplicated_lines_density"
+      }
+    }
+
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "duplicate_line_density_response.json"
+  }
+}

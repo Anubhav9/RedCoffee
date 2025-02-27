@@ -1,0 +1,157 @@
+{
+    "paging": {
+        "pageIndex": 1,
+        "pageSize": 100,
+        "total": 10
+    },
+    "baseComponent": {
+        "key": "car-loan-portal",
+        "name": "car-loan-portal",
+        "qualifier": "TRK",
+        "measures": [
+            {
+                "metric": "duplicated_lines",
+                "value": "60",
+                "bestValue": false
+            }
+        ]
+    },
+    "components": [
+        {
+            "key": "car-loan-portal:app.py",
+            "name": "app.py",
+            "qualifier": "FIL",
+            "path": "app.py",
+            "language": "py",
+            "measures": [
+                {
+                    "metric": "duplicated_lines",
+                    "value": "60",
+                    "bestValue": false
+                }
+            ]
+        },
+        {
+            "key": "car-loan-portal:controllers/confirmation_email.py",
+            "name": "confirmation_email.py",
+            "qualifier": "FIL",
+            "path": "controllers/confirmation_email.py",
+            "language": "py",
+            "measures": [
+                {
+                    "metric": "duplicated_lines",
+                    "value": "0",
+                    "bestValue": true
+                }
+            ]
+        },
+        {
+            "key": "car-loan-portal:controllers",
+            "name": "controllers",
+            "qualifier": "DIR",
+            "path": "controllers",
+            "measures": [
+                {
+                    "metric": "duplicated_lines",
+                    "value": "0",
+                    "bestValue": true
+                }
+            ]
+        },
+        {
+            "key": "car-loan-portal:templates/customer_email_template.html",
+            "name": "customer_email_template.html",
+            "qualifier": "FIL",
+            "path": "templates/customer_email_template.html",
+            "language": "web",
+            "measures": [
+                {
+                    "metric": "duplicated_lines",
+                    "value": "0",
+                    "bestValue": true
+                }
+            ]
+        },
+        {
+            "key": "car-loan-portal:static/information-page.css",
+            "name": "information-page.css",
+            "qualifier": "FIL",
+            "path": "static/information-page.css",
+            "language": "css",
+            "measures": [
+                {
+                    "metric": "duplicated_lines",
+                    "value": "0",
+                    "bestValue": true
+                }
+            ]
+        },
+        {
+            "key": "car-loan-portal:models/information_models.py",
+            "name": "information_models.py",
+            "qualifier": "FIL",
+            "path": "models/information_models.py",
+            "language": "py",
+            "measures": [
+                {
+                    "metric": "duplicated_lines",
+                    "value": "0",
+                    "bestValue": true
+                }
+            ]
+        },
+        {
+            "key": "car-loan-portal:templates/information_page.html",
+            "name": "information_page.html",
+            "qualifier": "FIL",
+            "path": "templates/information_page.html",
+            "language": "web",
+            "measures": [
+                {
+                    "metric": "duplicated_lines",
+                    "value": "0",
+                    "bestValue": true
+                }
+            ]
+        },
+        {
+            "key": "car-loan-portal:models",
+            "name": "models",
+            "qualifier": "DIR",
+            "path": "models",
+            "measures": [
+                {
+                    "metric": "duplicated_lines",
+                    "value": "0",
+                    "bestValue": true
+                }
+            ]
+        },
+        {
+            "key": "car-loan-portal:static",
+            "name": "static",
+            "qualifier": "DIR",
+            "path": "static",
+            "measures": [
+                {
+                    "metric": "duplicated_lines",
+                    "value": "0",
+                    "bestValue": true
+                }
+            ]
+        },
+        {
+            "key": "car-loan-portal:templates",
+            "name": "templates",
+            "qualifier": "DIR",
+            "path": "templates",
+            "measures": [
+                {
+                    "metric": "duplicated_lines",
+                    "value": "0",
+                    "bestValue": true
+                }
+            ]
+        }
+    ]
+}
