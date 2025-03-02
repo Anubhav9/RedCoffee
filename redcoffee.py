@@ -143,11 +143,11 @@ def draw_severity_icon(severity):
 
 def create_issues_report(file_path, host_name, auth_token, project_name):
     response = get_reported_issues_by_sonarqube(host_name, auth_token, project_name)
-    duplication_response=get_duplication_density(host_name,project_name, auth_token)
-    duplication_map=get_duplication_map(host_name,project_name,auth_token)
     if (response == ""):
         logging.error("We are sorry, we're having trouble generating your report")
         return
+    duplication_response=get_duplication_density(host_name,project_name, auth_token)
+    duplication_map=get_duplication_map(host_name,project_name,auth_token)
     component_list, fix_list, line_number_list, impact, issue_type_list = get_issues_by_type(response, "CODE_SMELL")
     size_of_code_smell_list = len(component_list)
     component_list_vulnerability, fix_list_vulnerability, line_number_list_vulnerability, impact_vulnerability, issue_type_list_vulnerability = get_issues_by_type(
@@ -266,7 +266,7 @@ def actual_table_content_data(component_list, fix_list, line_number_list, impact
     ]
 
     # Table content
-    print("Total Issues detected are " + str(len(component_list)))
+    logging.info("Total Issues detected are " + str(len(component_list)))
     for i in range(0, len(component_list)):
         severity_icon = draw_severity_icon(impact[i])
         description = fix_list[i]
@@ -391,7 +391,7 @@ def get_duplication_map(host_name,project_name,auth_token):
             if int(duplicated_lines_count)>0:
                 file_name=duplication_files_component[i]["path"]
                 duplication_map.update({file_name:duplicated_lines_count})
-        print(duplication_map)
+        logging.info(duplication_map)
         return duplication_map
 
 def get_user_geo_location():
