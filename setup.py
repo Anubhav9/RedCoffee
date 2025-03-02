@@ -11,7 +11,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name='redcoffee',
-    version='1.9',
+    version='2.2',
     author="Anubhav Sanyal",
     description='A command-line tool to generate PDF for SonarQube Reports',
     long_description=README,
