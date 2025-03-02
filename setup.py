@@ -18,7 +18,7 @@ setup(
     long_description_content_type='text/markdown',
     # Change this if your README is not markdown
     packages=find_packages(),  # Automatically find packages
-    py_modules=['redcoffee', 'styling', 'constants'],
+    py_modules=['redcoffee', 'styling', 'constants','support'],
     install_requires=[
         'click',
         'reportlab',
