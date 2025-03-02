@@ -10,6 +10,24 @@ import click
 import styling
 import constants
 from styling import BRANDING_STYLE
+import sentry_sdk
+import ipinfo
+import platform
+
+redcoffee_current_version="v1.8"
+ipinfo_access_token=os.getenv("IPINFO_ACCESS_TOKEN")
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN_URL"),
+    send_default_pii=False,
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+    integrations=[],
+    debug=False,
+    shutdown_timeout=0
+)
+logging.getLogger("sentry_sdk").setLevel(logging.ERROR)
+
 
 
 def get_reported_issues_by_sonarqube(host_name, auth_token, project_name):
