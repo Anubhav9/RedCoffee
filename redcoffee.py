@@ -16,7 +16,7 @@ import ipinfo
 import platform
 from support import pick_random_support_message
 
-redcoffee_current_version="v1.9"
+redcoffee_current_version="v2.2"
 ipinfo_access_token=os.getenv("IPINFO_ACCESS_TOKEN")
 
 sentry_sdk.init(
