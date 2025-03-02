@@ -358,6 +358,52 @@ def get_duplication_map(host_name,project_name,auth_token):
         print(duplication_map)
         return duplication_map
 
+def get_user_geo_location():
+    handler = ipinfo.getHandler(ipinfo_access_token)
+    details = handler.getDetails()
+    user_country = details.country
+    return user_country
+
+def get_info_for_sentry_analysis(host_name, project_name, auth_token):
+    if "localhost" in host_name:
+        protocol_type = "http://"
+    else:
+        protocol_type = "https://"
+
+    URL_FOR_SONARQUBE_VERSION = f"{protocol_type}{host_name}/api/system/status"
+    sqa_headers = {"Authorization": "Basic " + auth_token}
+    auth = HTTPBasicAuth(auth_token, "")
+    response_body_version = "NOT SET"
+    response_for_sonarqube_version = requests.get(url=URL_FOR_SONARQUBE_VERSION, auth=auth)
+    if response_for_sonarqube_version.status_code == 200:
+        response_body_version = response_for_sonarqube_version.json()["version"]
+    else:
+        logging.error(
+            f"Some error occurred while getting SonarQube version. However, this does not impact report generation ")
+
+    URL_FOR_MAJOR_LANGUAGE = f"{protocol_type}{host_name}/api/measures/component?component={project_name}&metricKeys=ncloc_language_distribution"
+    response_body_programming_langauge = "NOT SET"
+    response_for_major_programming_language = requests.get(url=URL_FOR_MAJOR_LANGUAGE, auth=auth)
+    language = "NOT SET"
+    if response_for_major_programming_language.status_code == 200:
+        all_languages = response_for_major_programming_language.json()["component"]["measures"][0]["value"]
+        all_languages_list = all_languages.split(";")
+        min_val = -1
+
+        for i in range(0, len(all_languages_list)):
+            sub_factors = all_languages_list[i].split("=")
+            language_per = sub_factors[1]
+            language_per = int(language_per)
+            if (language_per > min_val):
+                min_val = language_per
+                language = sub_factors[0]
+
+    else:
+        logging.error(
+            f"Some error occurred while fetching the major programming language. However, this does not impact report generation ")
+    return response_body_version, language
+
+
 @click.group()
 def cli():
     pass
