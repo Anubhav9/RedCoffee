@@ -24,11 +24,8 @@ sentry_sdk.init(
     send_default_pii=False,
     traces_sample_rate=1.0,
     profiles_sample_rate=1.0,
-    integrations=[],
-    debug=False,
-    shutdown_timeout=0
+    debug=False
 )
-logging.getLogger("sentry_sdk").setLevel(logging.ERROR)
 
 
 
@@ -82,8 +79,8 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name):
             "Unfortunately, report generation was not successful",
             level="error",
         )
-
-        logging.error("Status code is " + str(response.status_code))
+        sentry_sdk.flush()
+        print("Status code is " + str(response.status_code))
         return ""
 
 
@@ -144,7 +141,8 @@ def draw_severity_icon(severity):
 def create_issues_report(file_path, host_name, auth_token, project_name):
     response = get_reported_issues_by_sonarqube(host_name, auth_token, project_name)
     if (response == ""):
-        logging.error("We are sorry, we're having trouble generating your report")
+        logging.info("We are sorry, we're having trouble generating your report")
+        print("We are sorry, we're having trouble generating your report")
         return
     duplication_response=get_duplication_density(host_name,project_name, auth_token)
     duplication_map=get_duplication_map(host_name,project_name,auth_token)
@@ -209,6 +207,7 @@ def create_issues_report(file_path, host_name, auth_token, project_name):
     }
     sentry_sdk.set_context("custom_data", successful_data_to_sentry)
     sentry_sdk.capture_message("Report has been generated successfully", level="info")
+    sentry_sdk.flush()
     print("🎉Report Generated Successfully🍻")
 
 def create_basic_project_details_table(project_name):
@@ -359,8 +358,8 @@ def get_duplication_density(host_name,project_name,auth_token):
     auth = HTTPBasicAuth(auth_token, "")
     duplication_response=requests.get(url=DUPLICATION_URL,auth=auth)
     if duplication_response.status_code!=200:
-        logging.error(f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
-        logging.error(f"INFO : This would not impact your report generation but duplication % will be defaulted as Zero")
+        logging.info(f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
+        logging.info(f"INFO : This would not impact your report generation but duplication % will be defaulted as Zero")
         return 0
     else:
         duplication_response_json=duplication_response.json()
@@ -379,8 +378,8 @@ def get_duplication_map(host_name,project_name,auth_token):
     auth = HTTPBasicAuth(auth_token, "")
     duplication_response=requests.get(url=DUPLICATION_URL,auth=auth)
     if duplication_response.status_code!=200:
-        logging.error(f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
-        logging.error(f"INFO : This would not impact your report generation but duplication table won't be visible to you")
+        logging.info(f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
+        logging.info(f"INFO : This would not impact your report generation but duplication table won't be visible to you")
         return {}
     else:
         duplication_map={}
@@ -414,7 +413,7 @@ def get_info_for_sentry_analysis(host_name, project_name, auth_token):
     if response_for_sonarqube_version.status_code == 200:
         response_body_version = response_for_sonarqube_version.json()["version"]
     else:
-        logging.error(
+        logging.info(
             f"Some error occurred while getting SonarQube version. However, this does not impact report generation ")
 
     URL_FOR_MAJOR_LANGUAGE = f"{protocol_type}{host_name}/api/measures/component?component={project_name}&metricKeys=ncloc_language_distribution"
@@ -435,7 +434,7 @@ def get_info_for_sentry_analysis(host_name, project_name, auth_token):
                 language = sub_factors[0]
 
     else:
-        logging.error(
+        logging.info(
             f"Some error occurred while fetching the major programming language. However, this does not impact report generation ")
     return response_body_version, language
 
@@ -453,7 +452,6 @@ def cli():
 def generatepdf(host, project, path, token):
     create_issues_report(path, host, token, project)
     print(pick_random_support_message())
-
 
 cli.add_command(generatepdf)
 if __name__ == "__main__":
