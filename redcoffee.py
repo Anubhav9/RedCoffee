@@ -59,6 +59,28 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name):
         logging.debug("OK Status code is received , moving on to the next operations")
         return response
     elif (response.status_code != 200):
+        sonarqube_version, programming_language = get_info_for_sentry_analysis(host_name, project_name, auth_token)
+        is_user_token = False
+        token_fragmented = auth_token.split("_")
+        if token_fragmented[0] == "squ":
+            is_user_token = True
+
+        sentry_unsuccessful_response = {
+            "redcoffee_version": redcoffee_current_version,
+            "sonarqube_version": sonarqube_version,
+            "operating_system": platform.system(),
+            "major_programming_language": programming_language,
+            "response_code": response.status_code,
+            "is_user_token": is_user_token,
+            "country_of_origin": get_user_geo_location()
+        }
+
+        sentry_sdk.set_context("custom_data", sentry_unsuccessful_response)
+        sentry_sdk.capture_message(
+            "Unfortunately, report generation was not successful",
+            level="error",
+        )
+
         logging.error("Status code is " + str(response.status_code))
         return ""
 
@@ -174,6 +196,18 @@ def create_issues_report(file_path, host_name, auth_token, project_name):
         elements.append(table)
 
     doc.build(elements)
+    sonarqube_version, programming_language = get_info_for_sentry_analysis(host_name, project_name, auth_token)
+    successful_data_to_sentry = {
+        "redcoffee_version": redcoffee_current_version,
+        "sonarqube_version": sonarqube_version,
+        "operating_system": platform.system(),
+        "major_programming_language": programming_language,
+        "country_of_origin": get_user_geo_location()
+
+    }
+    sentry_sdk.set_context("custom_data", successful_data_to_sentry)
+    sentry_sdk.capture_message("Report has been generated successfully", level="info")
+    print("🎉Report Generated Successfully🍻")
 
 def create_basic_project_details_table(project_name):
     """
@@ -416,6 +450,7 @@ def cli():
 @click.option("--token", help="SonarQube Global Analysis Token")
 def generatepdf(host, project, path, token):
     create_issues_report(path, host, token, project)
+    print(pick_random_support_message())
 
 
 cli.add_command(generatepdf)
