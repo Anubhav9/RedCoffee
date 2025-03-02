@@ -1,3 +1,4 @@
+import os
 import requests
 from requests.auth import HTTPBasicAuth
 import logging
@@ -13,6 +14,7 @@ from styling import BRANDING_STYLE
 import sentry_sdk
 import ipinfo
 import platform
+from support import pick_random_support_message
 
 redcoffee_current_version="v1.8"
 ipinfo_access_token=os.getenv("IPINFO_ACCESS_TOKEN")
