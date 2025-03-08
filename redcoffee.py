@@ -3,6 +3,8 @@ import requests
 from requests.auth import HTTPBasicAuth
 import logging
 import datetime
+from html import escape
+from urllib.parse import urlparse
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table
@@ -15,10 +17,12 @@ import sentry_sdk
 import ipinfo
 import platform
 from support import pick_random_support_message
+from dotenv import load_dotenv
 
-redcoffee_current_version="v2.2"
+load_dotenv()
+
+redcoffee_current_version="v2.3"
 ipinfo_access_token=os.getenv("IPINFO_ACCESS_TOKEN")
-
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN_URL"),
     send_default_pii=False,
@@ -28,8 +32,7 @@ sentry_sdk.init(
 )
 
 
-
-def get_reported_issues_by_sonarqube(host_name, auth_token, project_name):
+def get_reported_issues_by_sonarqube(host_name, auth_token, project_name, protocol):
     """
     This function makes an API call to SonarQube server and fetches all the information
     about the project which has already been analysed.
@@ -47,18 +50,37 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name):
     sqa_headers = {"Authorization": "Basic " + auth_token}
     auth = HTTPBasicAuth(auth_token, "")
     logging.debug("Bearer Token being passed is :: " + str(sqa_headers))
-    if "localhost" in host_name:
-        protocol_type = "http://"
-    else:
-        protocol_type = "https://"
+    ## First Priority goes to protocol supplied, if any
+    protocol_type = handle_protocol_for_every_communication(protocol, host_name)
+    if host_name.startswith("http") or host_name.startswith("http"):
+        host_name = remove_protocol(host_name)
     url_to_hit = protocol_type + host_name + "/api/issues/search?componentKeys=" + project_name + "&resolved=false"
     logging.info("URL that has we are hitting to fetch SonarQube reports are " + url_to_hit)
-    response = requests.get(url=url_to_hit, auth=auth)
+    try:
+        response = requests.get(url=url_to_hit, auth=auth)
+    except Exception as e:
+        print(
+            "We are sorry, we're unable to establish connection with your SonarQube Instance. Please recheck if you have provided the correct host name & port and protocol (if applicable)")
+        sentry_unsuccessful_response = {
+            "protocol": protocol,
+            "assigned_protocol_type": protocol_type,
+            "redcoffee_version": redcoffee_current_version,
+            "operating_system": platform.system(),
+            "country_of_origin": get_user_geo_location()
+        }
+        sentry_sdk.set_context("custom_data", sentry_unsuccessful_response)
+        sentry_sdk.capture_message(
+            "Unfortunately, there was an error while establishing the connection",
+            level="error",
+        )
+        sentry_sdk.flush()
+        return ""
     if (response.status_code == 200):
         logging.debug("OK Status code is received , moving on to the next operations")
         return response
     elif (response.status_code != 200):
-        sonarqube_version, programming_language = get_info_for_sentry_analysis(host_name, project_name, auth_token)
+        sonarqube_version, programming_language = get_info_for_sentry_analysis(host_name, project_name, auth_token,
+                                                                               protocol)
         is_user_token = False
         token_fragmented = auth_token.split("_")
         if token_fragmented[0] == "squ":
@@ -138,14 +160,14 @@ def draw_severity_icon(severity):
         return "<font color='green' size='12'>&#9679;</font>"
 
 
-def create_issues_report(file_path, host_name, auth_token, project_name):
-    response = get_reported_issues_by_sonarqube(host_name, auth_token, project_name)
+def create_issues_report(file_path, host_name, auth_token, project_name, protocol):
+    response = get_reported_issues_by_sonarqube(host_name, auth_token, project_name, protocol)
     if (response == ""):
         logging.info("We are sorry, we're having trouble generating your report")
         print("We are sorry, we're having trouble generating your report")
         return
-    duplication_response=get_duplication_density(host_name,project_name, auth_token)
-    duplication_map=get_duplication_map(host_name,project_name,auth_token)
+    duplication_response = get_duplication_density(host_name, project_name, auth_token, protocol)
+    duplication_map = get_duplication_map(host_name, project_name, auth_token, protocol)
     component_list, fix_list, line_number_list, impact, issue_type_list = get_issues_by_type(response, "CODE_SMELL")
     size_of_code_smell_list = len(component_list)
     component_list_vulnerability, fix_list_vulnerability, line_number_list_vulnerability, impact_vulnerability, issue_type_list_vulnerability = get_issues_by_type(
@@ -190,13 +212,14 @@ def create_issues_report(file_path, host_name, auth_token, project_name):
     elements.append(Paragraph("", title_style))
 
     # Duplication
-    if(len(duplication_map)>0):
+    if (len(duplication_map) > 0):
         elements.append(Paragraph(constants.SUBHEADER_DUPLICATION_DOCUMENT, subtitle_style))
-        table=duplication_table(duplication_map=duplication_map)
+        table = duplication_table(duplication_map=duplication_map)
         elements.append(table)
 
     doc.build(elements)
-    sonarqube_version, programming_language = get_info_for_sentry_analysis(host_name, project_name, auth_token)
+    sonarqube_version, programming_language = get_info_for_sentry_analysis(host_name, project_name, auth_token,
+                                                                           protocol)
     successful_data_to_sentry = {
         "redcoffee_version": redcoffee_current_version,
         "sonarqube_version": sonarqube_version,
@@ -209,6 +232,7 @@ def create_issues_report(file_path, host_name, auth_token, project_name):
     sentry_sdk.capture_message("Report has been generated successfully", level="info")
     sentry_sdk.flush()
     print("🎉Report Generated Successfully🍻")
+
 
 def create_basic_project_details_table(project_name):
     """
@@ -275,11 +299,11 @@ def actual_table_content_data(component_list, fix_list, line_number_list, impact
         issue_type_entry_table = issue_type_entry_table.replace("_", " ").title()
 
         data.append([
-            Paragraph(severity_icon, normal_style),
-            Paragraph(description, normal_style),
-            Paragraph(issue_type_entry_table, normal_style),
-            Paragraph(file_name, normal_style),
-            Paragraph(line_number, normal_style),
+            Paragraph(escape(severity_icon), normal_style),
+            Paragraph(escape(description), normal_style),
+            Paragraph(escape(issue_type_entry_table), normal_style),
+            Paragraph(escape(file_name), normal_style),
+            Paragraph(escape(line_number), normal_style),
         ])
 
     # Create table
@@ -293,15 +317,15 @@ def duplication_table(duplication_map):
     header_style = styling.HEADER_STYLE
     data = [
         [
-         Paragraph(constants.TABLE_HEADER_FILE_NAME, header_style),
-         Paragraph(constants.TABLE_HEADER_DUPLICATED_LINES, header_style)]
+            Paragraph(constants.TABLE_HEADER_FILE_NAME, header_style),
+            Paragraph(constants.TABLE_HEADER_DUPLICATED_LINES, header_style)]
     ]
-    for i,j in duplication_map.items():
-        file_name=i
-        duplicated_lines=j
+    for i, j in duplication_map.items():
+        file_name = i
+        duplicated_lines = j
         data.append([
-            Paragraph(file_name, normal_style),
-            Paragraph(duplicated_lines, normal_style),
+            Paragraph(escape(file_name), normal_style),
+            Paragraph(escape(duplicated_lines), normal_style),
         ])
 
     table = Table(data, colWidths=[3 * inch, 1 * inch])
@@ -336,10 +360,10 @@ def issue_summary_overview(bug_list, vulnerability_list, code_smell_list, duplic
     # Table content
 
     data.append([
-        Paragraph(str(bug_list), normal_style),
-        Paragraph(str(vulnerability_list), normal_style),
-        Paragraph(str(code_smell_list), normal_style),
-        Paragraph(str(duplication_list), normal_style),
+        Paragraph(escape(str(bug_list)), normal_style),
+        Paragraph(escape(str(vulnerability_list)), normal_style),
+        Paragraph(escape(str(code_smell_list)), normal_style),
+        Paragraph(escape(str(duplication_list)), normal_style),
     ])
 
     # Create table
@@ -348,50 +372,52 @@ def issue_summary_overview(bug_list, vulnerability_list, code_smell_list, duplic
     return table
 
 
-def get_duplication_density(host_name,project_name,auth_token):
-    if "localhost" in host_name:
-        protocol_type = "http://"
-    else:
-        protocol_type = "https://"
-    DUPLICATION_URL=f"{protocol_type}{host_name}/api/measures/component?component={project_name}&metricKeys=duplicated_lines_density"
+def get_duplication_density(host_name, project_name, auth_token, protocol):
+    protocol_type = handle_protocol_for_every_communication(protocol, host_name)
+    if host_name.startswith("http") or host_name.startswith("http"):
+        host_name = remove_protocol(host_name)
+    DUPLICATION_URL = f"{protocol_type}{host_name}/api/measures/component?component={project_name}&metricKeys=duplicated_lines_density"
     logging.info(f"Generated Duplication URL is :: {DUPLICATION_URL}")
     auth = HTTPBasicAuth(auth_token, "")
-    duplication_response=requests.get(url=DUPLICATION_URL,auth=auth)
-    if duplication_response.status_code!=200:
-        logging.info(f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
+    duplication_response = requests.get(url=DUPLICATION_URL, auth=auth)
+    if duplication_response.status_code != 200:
+        logging.info(
+            f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
         logging.info(f"INFO : This would not impact your report generation but duplication % will be defaulted as Zero")
         return 0
     else:
-        duplication_response_json=duplication_response.json()
-        duplicated_line_density=duplication_response_json["component"]["measures"][0]["value"]
+        duplication_response_json = duplication_response.json()
+        duplicated_line_density = duplication_response_json["component"]["measures"][0]["value"]
         logging.info(f"The duplication % received is :: {duplicated_line_density}")
         return duplicated_line_density
 
 
-def get_duplication_map(host_name,project_name,auth_token):
-    if "localhost" in host_name:
-        protocol_type = "http://"
-    else:
-        protocol_type = "https://"
+def get_duplication_map(host_name, project_name, auth_token, protocol):
+    protocol_type = handle_protocol_for_every_communication(protocol, host_name)
+    if host_name.startswith("http") or host_name.startswith("http"):
+        host_name = remove_protocol(host_name)
     DUPLICATION_URL = f"{protocol_type}{host_name}/api/measures/component_tree?component={project_name}&metricKeys=duplicated_lines"
     logging.info(f"Generated Duplication URL is :: {DUPLICATION_URL}")
     auth = HTTPBasicAuth(auth_token, "")
-    duplication_response=requests.get(url=DUPLICATION_URL,auth=auth)
-    if duplication_response.status_code!=200:
-        logging.info(f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
-        logging.info(f"INFO : This would not impact your report generation but duplication table won't be visible to you")
+    duplication_response = requests.get(url=DUPLICATION_URL, auth=auth)
+    if duplication_response.status_code != 200:
+        logging.info(
+            f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
+        logging.info(
+            f"INFO : This would not impact your report generation but duplication table won't be visible to you")
         return {}
     else:
-        duplication_map={}
-        duplication_response_json=duplication_response.json()
-        duplication_files_component=duplication_response_json["components"]
-        for i in range(0,len(duplication_files_component)):
-            duplicated_lines_count=duplication_files_component[i]["measures"][0]["value"]
-            if int(duplicated_lines_count)>0:
-                file_name=duplication_files_component[i]["path"]
-                duplication_map.update({file_name:duplicated_lines_count})
+        duplication_map = {}
+        duplication_response_json = duplication_response.json()
+        duplication_files_component = duplication_response_json["components"]
+        for i in range(0, len(duplication_files_component)):
+            duplicated_lines_count = duplication_files_component[i]["measures"][0]["value"]
+            if int(duplicated_lines_count) > 0:
+                file_name = duplication_files_component[i]["path"]
+                duplication_map.update({file_name: duplicated_lines_count})
         logging.info(duplication_map)
         return duplication_map
+
 
 def get_user_geo_location():
     handler = ipinfo.getHandler(ipinfo_access_token)
@@ -399,12 +425,11 @@ def get_user_geo_location():
     user_country = details.country
     return user_country
 
-def get_info_for_sentry_analysis(host_name, project_name, auth_token):
-    if "localhost" in host_name:
-        protocol_type = "http://"
-    else:
-        protocol_type = "https://"
 
+def get_info_for_sentry_analysis(host_name, project_name, auth_token, protocol):
+    protocol_type = handle_protocol_for_every_communication(protocol, host_name)
+    if host_name.startswith("http") or host_name.startswith("http"):
+        host_name = remove_protocol(host_name)
     URL_FOR_SONARQUBE_VERSION = f"{protocol_type}{host_name}/api/system/status"
     sqa_headers = {"Authorization": "Basic " + auth_token}
     auth = HTTPBasicAuth(auth_token, "")
@@ -439,6 +464,40 @@ def get_info_for_sentry_analysis(host_name, project_name, auth_token):
     return response_body_version, language
 
 
+def handle_protocol_for_every_communication(protocol, host):
+    """
+    Observed a lot of errors related to protocol since I was enforcing protocol based on custom logic which was incorrect. Figured out a temporary way to handle the protocol communication by adding extra parameter in click command which is optional currently. If this works out, I will promote this to required argument in the next major release - 2.5 onwards.
+    
+    Arguments:
+        protocol - Only 2 available choices - http or https
+    """
+
+    if protocol == "" or protocol is None:
+        logging.info("No protocol has been supplied, hence we will go to fallback routes")
+        protocol_type = ""
+        if "localhost" in host:
+            protocol_type = "http://"
+        elif host.startswith("http://") or host.startswith("https://"):
+            squandered_string = host.split(":")[0]
+            protocol_type = squandered_string + "://"
+        else:
+            protocol_type = "http://"
+
+        if "localhost" in host and host.startswith("https://"):
+            protocol_type = "http://"
+        return protocol_type
+
+    else:
+        logging.info(f"Protocol Supplied is {protocol}")
+        protocol_type = protocol + "://"
+        return protocol_type
+
+
+def remove_protocol(url):
+    parsed_url = urlparse(url)
+    return parsed_url.netloc + parsed_url.path
+
+
 @click.group()
 def cli():
     pass
@@ -449,9 +508,12 @@ def cli():
 @click.option("--project", help="Name of the Project Key that we want to search for in SonarQube report ")
 @click.option("--path", help="Path where we want to the PDF Report")
 @click.option("--token", help="SonarQube Global Analysis Token")
-def generatepdf(host, project, path, token):
-    create_issues_report(path, host, token, project)
+@click.option("--protocol", type=click.Choice(["http", "https"], case_sensitive=False), required=False,
+              help="The protocol that you want to enforce - HTTP or HTTPS")
+def generatepdf(host, project, path, token, protocol):
+    create_issues_report(path, host, token, project, protocol)
     print(pick_random_support_message())
+
 
 cli.add_command(generatepdf)
 if __name__ == "__main__":
