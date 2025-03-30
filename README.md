@@ -34,3 +34,7 @@ redcoffee generatepdf --host=${YOUR_SONARQUBE_HOST_NAME} --project=${SONARQUBE_P
 
 Please reach out to @Anubhav9 on Github
 
+## More Information and Documentation ( made available via Github Pages )
+
+Please visit the Github Page for this project to stay updated with the latest changes - [Github Page Documentation for RedCoffee](https://anubhav9.github.io/RedCoffee)
+
