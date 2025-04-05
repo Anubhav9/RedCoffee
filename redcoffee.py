@@ -1,5 +1,6 @@
 import os
 import requests
+from pathlib import Path
 from requests.auth import HTTPBasicAuth
 import logging
 import datetime
@@ -16,12 +17,12 @@ from styling import BRANDING_STYLE
 import sentry_sdk
 import ipinfo
 import platform
-from support import pick_random_support_message
+from support import pick_random_support_message, warning_for_path_change
 from dotenv import load_dotenv
 
 load_dotenv()
 
-redcoffee_current_version="v2.3"
+redcoffee_current_version="v2.6"
 ipinfo_access_token=os.getenv("IPINFO_ACCESS_TOKEN")
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN_URL"),
@@ -133,7 +134,11 @@ def get_issues_by_type(response, issue_type):
         if (actual_issue_type == issue_type):
             component_list.append(response_body["issues"][i]["component"])
             fix_list.append(response_body["issues"][i]["message"])
-            line_number.append(response_body["issues"][i]["line"])
+            line_number_get=response_body["issues"][i].get("line")
+            if line_number_get is not None:
+                line_number.append(line_number_get)
+            else:
+                line_number.append("NA")
             impact.append(response_body["issues"][i]["severity"])
             issue_type_list.append(issue_type)
     return component_list, fix_list, line_number, impact, issue_type_list
@@ -498,6 +503,34 @@ def remove_protocol(url):
     return parsed_url.netloc + parsed_url.path
 
 
+def check_and_validate_file_path(path):
+    """
+    Sanitise file path and checks if it is a valid directory to store the generated report.
+
+    Arguments:
+        path: The file path being provided by the user
+    """
+
+    resolved_directory=""
+    result_ends_with_pdf=str(path).endswith(".pdf")
+    if result_ends_with_pdf==False:
+        resolved_directory=Path(path) / constants.FALLBACK_FILE_NAME
+        return check_and_validate_file_path(resolved_directory)
+
+    else:
+        path_resolved=Path(path).resolve(strict=False)
+        if path_resolved.parent.exists():
+            logging.info("Since Path is valid and exists, we are not manipulating things at Server Side")
+            resolved_directory=path
+            print(resolved_directory)
+            return resolved_directory
+        else:
+            logging.info("Path does not exists, we will fallback to defaults")
+            resolved_directory = Path.home() / "Downloads" / constants.FALLBACK_FILE_NAME
+            return resolved_directory
+
+
+
 @click.group()
 def cli():
     pass
@@ -511,8 +544,11 @@ def cli():
 @click.option("--protocol", type=click.Choice(["http", "https"], case_sensitive=False), required=False,
               help="The protocol that you want to enforce - HTTP or HTTPS")
 def generatepdf(host, project, path, token, protocol):
-    create_issues_report(path, host, token, project, protocol)
+    resolved_path=str(check_and_validate_file_path(path))
+    create_issues_report(resolved_path, host, token, project, protocol)
     print(pick_random_support_message())
+    if path!=resolved_path:
+        print(warning_for_path_change(resolved_path))
 
 
 cli.add_command(generatepdf)
