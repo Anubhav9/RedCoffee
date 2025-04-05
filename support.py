@@ -7,3 +7,6 @@ def pick_random_support_message():
         "💕 This project runs on coffee & GitHub stars! ☕✨ Send some love by starring the repo! ⭐. Link: https://github.com/Anubhav9/redcoffee"
     ]
     return random.choice(support_messages)
+
+def warning_for_path_change(resolved_path):
+    return f"Attention User‼️ Your SonarQube Analysis PDF report will now be available at the following path {resolved_path}"
