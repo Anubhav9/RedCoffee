@@ -26,7 +26,8 @@ setup(
         'requests',
         'setuptools',
         'ipinfo',
-        'sentry_sdk'
+        'sentry_sdk',
+        'dotenv'
     ],
     entry_points='''
         [console_scripts]
