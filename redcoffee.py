@@ -522,7 +522,6 @@ def check_and_validate_file_path(path):
         if path_resolved.parent.exists():
             logging.info("Since Path is valid and exists, we are not manipulating things at Server Side")
             resolved_directory=path
-            print(resolved_directory)
             return resolved_directory
         else:
             logging.info("Path does not exists, we will fallback to defaults")
