@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-redcoffee_current_version="v2.6"
+redcoffee_current_version="v2.8"
 ipinfo_access_token=os.getenv("IPINFO_ACCESS_TOKEN")
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN_URL"),
@@ -304,7 +304,7 @@ def actual_table_content_data(component_list, fix_list, line_number_list, impact
         issue_type_entry_table = issue_type_entry_table.replace("_", " ").title()
 
         data.append([
-            Paragraph(escape(severity_icon), normal_style),
+            Paragraph(severity_icon, normal_style),
             Paragraph(escape(description), normal_style),
             Paragraph(escape(issue_type_entry_table), normal_style),
             Paragraph(escape(file_name), normal_style),
