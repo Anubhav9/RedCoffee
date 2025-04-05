@@ -1,0 +1,8 @@
+site_name: Hi, from RedCoffee
+theme:
+  name: terminal
+nav:
+  - Home: 'index.md'
+  - Installation: 'install.md'
+  - Documentation: 'documentation.md'
+  - Change Log: 'changelog.md'
