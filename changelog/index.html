@@ -223,13 +223,18 @@
 <nav>
     <ul>
         <li><a href="#change-log-for-redcoffee">Change Log for RedCoffee</a></li>
-        <li><a href="#version-25-released-on-march-82025">Version 2.5 (Released on March 8,2025)</a></li><li><a href="#version-22-released-on-march-22025">Version 2.2 (Released on March 2,2025)</a></li><li><a href="#version-18-released-on-feb-162025">Version 1.8 (Released on Feb 16,2025)</a></li><li><a href="#version-11-released-on-feb-82025">Version 1.1 (Released on Feb 8,2025)</a></li><li><a href="#version-02-released-on-june-12024">Version 0.2 (Released on June 1,2024)</a></li>
+        <li><a href="#version-28-released-on-april-52025">Version 2.8 (Released on April 5,2025)</a></li><li><a href="#version-25-released-on-march-82025">Version 2.5 (Released on March 8,2025)</a></li><li><a href="#version-22-released-on-march-22025">Version 2.2 (Released on March 2,2025)</a></li><li><a href="#version-18-released-on-feb-162025">Version 1.8 (Released on Feb 16,2025)</a></li><li><a href="#version-11-released-on-feb-82025">Version 1.1 (Released on Feb 8,2025)</a></li><li><a href="#version-02-released-on-june-12024">Version 0.2 (Released on June 1,2024)</a></li>
     </ul>
 </nav>
 </aside>
             <main id="terminal-mkdocs-main-content">
 <section id="mkdocs-terminal-content">
     <h2 id="change-log-for-redcoffee">Change Log for RedCoffee</h2>
+<h3 id="version-28-released-on-april-52025">Version 2.8 (Released on April 5,2025)</h3>
+<ul>
+<li>Saw a lot of errors in Sentry as users were passing the path flag incorrectly. Made code changes to handle the same and also added a fallback mechanism which shall prevent any more failures from happening.</li>
+<li>Few errors were reported because the API response did not contain the key <code>line</code>. The failure is now being handled properly from this version.</li>
+</ul>
 <h3 id="version-25-released-on-march-82025">Version 2.5 (Released on March 8,2025)</h3>
 <ul>
 <li>After addition of Sentry logs, I got notified that most of the failures are coming because of Protocol Handling mismatch. I was previously enforcing protocol on my side, now the control has been given to the user. There is an additional fallback option though if the user forgets to add the protocol or makes a mistake.</li>
