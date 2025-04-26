@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-redcoffee_current_version="v2.8"
+redcoffee_current_version="v2.9"
 ipinfo_access_token=os.getenv("IPINFO_ACCESS_TOKEN")
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN_URL"),
@@ -391,10 +391,26 @@ def get_duplication_density(host_name, project_name, auth_token, protocol):
         logging.info(f"INFO : This would not impact your report generation but duplication % will be defaulted as Zero")
         return 0
     else:
-        duplication_response_json = duplication_response.json()
-        duplicated_line_density = duplication_response_json["component"]["measures"][0]["value"]
-        logging.info(f"The duplication % received is :: {duplicated_line_density}")
-        return duplicated_line_density
+        try:
+            duplication_response_json = duplication_response.json()
+            duplicated_component=duplication_response_json.get("component")
+            if duplicated_component is None:
+                return 0
+            else:
+                duplicated_measures=duplicated_component.get("measures")
+                if duplicated_measures is not None and len(duplicated_measures)>0:
+                    duplicated_line_density=duplicated_measures[0].get("value")
+                    if duplicated_line_density is None:
+                        return 0
+                    else:
+                        logging.info(f"The duplication % received is :: {duplicated_line_density}")
+                        return duplicated_line_density
+                else:
+                    return 0
+        except Exception as e:
+            logging.info("For Some reasons duplication % cannot be computed")
+            return 0
+
 
 
 def get_duplication_map(host_name, project_name, auth_token, protocol):
@@ -412,23 +428,50 @@ def get_duplication_map(host_name, project_name, auth_token, protocol):
             f"INFO : This would not impact your report generation but duplication table won't be visible to you")
         return {}
     else:
-        duplication_map = {}
-        duplication_response_json = duplication_response.json()
-        duplication_files_component = duplication_response_json["components"]
-        for i in range(0, len(duplication_files_component)):
-            duplicated_lines_count = duplication_files_component[i]["measures"][0]["value"]
-            if int(duplicated_lines_count) > 0:
-                file_name = duplication_files_component[i]["path"]
-                duplication_map.update({file_name: duplicated_lines_count})
-        logging.info(duplication_map)
-        return duplication_map
+        try:
+            duplication_map = {}
+            duplication_response_json = duplication_response.json()
+            duplication_files_component = duplication_response_json.get("components")
+            if duplication_files_component is None:
+                logging.info(f"SonarQube API didn't respond with correct standard since Component Key is missing within Duplication Response")
+                return {}
+            else:
+                if(len(duplication_files_component)>0):
+                    for i in range(0,len(duplication_files_component)):
+                        duplication_file_measures=duplication_files_component[i].get("measures")
+                        if duplication_file_measures is None:
+                            logging.info(f"SonarQube API didn't respond in the correct format since it does not have a measure component in duplication API")
+
+                        else:
+                            if(len(duplication_file_measures)>0):
+                                duplicated_line_count=duplication_file_measures[0].get("value")
+                                if duplicated_line_count is not None:
+                                    if int(duplicated_line_count) > 0:
+                                        file_name = duplication_files_component[i]["path"]
+                                        duplication_map.update({file_name: duplicated_line_count})
+                                        logging.info(duplication_map)
+                                else:
+                                    logging.info(f"SonarQube API didn't respond in the correct format since we didn't get duplication count")
+                            else:
+                                logging.info(f"SonarQube API didn't respond in the correct format since measures is not a list in duplication API")
+                    return duplication_map
+                else:
+                    logging.info("SonarQube API didn't respond in correct format since Component is not returned as a list or size of component list is 0")
+                    return {}
+        except Exception as e:
+            logging.info("For some reasons, duplication map cannot be generated")
+            return {}
 
 
 def get_user_geo_location():
-    handler = ipinfo.getHandler(ipinfo_access_token)
-    details = handler.getDetails()
-    user_country = details.country
-    return user_country
+    try:
+        handler = ipinfo.getHandler(ipinfo_access_token)
+        details = handler.getDetails()
+        user_country = details.country
+        return user_country
+    except Exception as e:
+        logging.info(f"Something is wrong with IPInfo")
+        return "Default Location - North Korea"
 
 
 def get_info_for_sentry_analysis(host_name, project_name, auth_token, protocol):
@@ -451,17 +494,31 @@ def get_info_for_sentry_analysis(host_name, project_name, auth_token, protocol):
     response_for_major_programming_language = requests.get(url=URL_FOR_MAJOR_LANGUAGE, auth=auth)
     language = "NOT SET"
     if response_for_major_programming_language.status_code == 200:
-        all_languages = response_for_major_programming_language.json()["component"]["measures"][0]["value"]
-        all_languages_list = all_languages.split(";")
-        min_val = -1
+        try:
+            all_languages_json=response_for_major_programming_language.json()
+            all_languages_component=all_languages_json.get("component",{})
+            all_languages_measures=all_languages_component.get("measures")
+            if all_languages_measures is None:
+                logging.info(f"SonarQube API didn't respond with correct standards")
 
-        for i in range(0, len(all_languages_list)):
-            sub_factors = all_languages_list[i].split("=")
-            language_per = sub_factors[1]
-            language_per = int(language_per)
-            if (language_per > min_val):
-                min_val = language_per
-                language = sub_factors[0]
+            elif all_languages_measures is not None and len(all_languages_measures)>0:
+                all_languages = all_languages_measures[0].get("value")
+                if all_languages is not None:
+                    all_languages_list = all_languages.split(";")
+                    min_val = -1
+
+                    for i in range(0, len(all_languages_list)):
+                        sub_factors = all_languages_list[i].split("=")
+                        language_per = sub_factors[1]
+                        language_per = int(language_per)
+                        if (language_per > min_val):
+                            min_val = language_per
+                            language = sub_factors[0]
+                else:
+                    logging.info(f"SonarQube API didn't respond with correct standards")
+        except Exception as e:
+            logging.info(f"Some error occured either while unpacking the json or in the measures array. Exception being thrown is {e}")
+            return response_body_version, language
 
     else:
         logging.info(
@@ -510,23 +567,27 @@ def check_and_validate_file_path(path):
     Arguments:
         path: The file path being provided by the user
     """
-
-    resolved_directory=""
-    result_ends_with_pdf=str(path).endswith(".pdf")
-    if result_ends_with_pdf==False:
-        resolved_directory=Path(path) / constants.FALLBACK_FILE_NAME
-        return check_and_validate_file_path(resolved_directory)
+    if path is None:
+        resolved_directory = Path.home() / "Downloads" / constants.FALLBACK_FILE_NAME
+        return resolved_directory
 
     else:
-        path_resolved=Path(path).resolve(strict=False)
-        if path_resolved.parent.exists():
-            logging.info("Since Path is valid and exists, we are not manipulating things at Server Side")
-            resolved_directory=path
-            return resolved_directory
+        resolved_directory=""
+        result_ends_with_pdf=str(path).endswith(".pdf")
+        if result_ends_with_pdf==False:
+            resolved_directory=Path(path) / constants.FALLBACK_FILE_NAME
+            return check_and_validate_file_path(resolved_directory)
+
         else:
-            logging.info("Path does not exists, we will fallback to defaults")
-            resolved_directory = Path.home() / "Downloads" / constants.FALLBACK_FILE_NAME
-            return resolved_directory
+            path_resolved=Path(path).resolve(strict=False)
+            if path_resolved.parent.exists():
+                logging.info("Since Path is valid and exists, we are not manipulating things at Server Side")
+                resolved_directory=path
+                return resolved_directory
+            else:
+                logging.info("Path does not exists, we will fallback to defaults")
+                resolved_directory = Path.home() / "Downloads" / constants.FALLBACK_FILE_NAME
+                return resolved_directory
 
 
 
@@ -536,10 +597,10 @@ def cli():
 
 
 @click.command()
-@click.option("--host", help="The host url where SonarQube server is running")
-@click.option("--project", help="Name of the Project Key that we want to search for in SonarQube report ")
-@click.option("--path", help="Path where we want to the PDF Report")
-@click.option("--token", help="SonarQube Global Analysis Token")
+@click.option("--host", help="The host url where SonarQube server is running",required=True)
+@click.option("--project", help="Name of the Project Key that we want to search for in SonarQube report ",required=True)
+@click.option("--path", help="Path where we want to the PDF Report",required=False)
+@click.option("--token", help="SonarQube Global Analysis Token",required=True)
 @click.option("--protocol", type=click.Choice(["http", "https"], case_sensitive=False), required=False,
               help="The protocol that you want to enforce - HTTP or HTTPS")
 def generatepdf(host, project, path, token, protocol):
