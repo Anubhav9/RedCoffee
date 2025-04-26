@@ -464,10 +464,14 @@ def get_duplication_map(host_name, project_name, auth_token, protocol):
 
 
 def get_user_geo_location():
-    handler = ipinfo.getHandler(ipinfo_access_token)
-    details = handler.getDetails()
-    user_country = details.country
-    return user_country
+    try:
+        handler = ipinfo.getHandler(ipinfo_access_token)
+        details = handler.getDetails()
+        user_country = details.country
+        return user_country
+    except Exception as e:
+        logging.info(f"Something is wrong with IPInfo")
+        return "Default Location - North Korea"
 
 
 def get_info_for_sentry_analysis(host_name, project_name, auth_token, protocol):
