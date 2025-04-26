@@ -393,9 +393,20 @@ def get_duplication_density(host_name, project_name, auth_token, protocol):
     else:
         try:
             duplication_response_json = duplication_response.json()
-            duplicated_line_density = duplication_response_json["component"]["measures"][0]["value"]
-            logging.info(f"The duplication % received is :: {duplicated_line_density}")
-            return duplicated_line_density
+            duplicated_component=duplication_response_json.get("component")
+            if duplicated_component is None:
+                return 0
+            else:
+                duplicated_measures=duplicated_component.get("measures")
+                if duplicated_measures is not None and len(duplicated_measures)>0:
+                    duplicated_line_density=duplicated_measures[0].get("value")
+                    if duplicated_line_density is None:
+                        return 0
+                    else:
+                        logging.info(f"The duplication % received is :: {duplicated_line_density}")
+                        return duplicated_line_density
+                else:
+                    return 0
         except Exception as e:
             logging.info("For Some reasons duplication % cannot be computed")
             return 0
