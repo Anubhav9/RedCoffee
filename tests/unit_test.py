@@ -35,12 +35,12 @@ def test_get_issues_by_type():
 
 """
 def test_duplicate_line_density():
-    duplicate_line_density_actual=get_duplication_density("localhost:8000","car-loan-portal","squ_aa9488007125b09c46e8e2a16a5bccd822738bc2")
+    duplicate_line_density_actual=get_duplication_density("localhost:8000","car-loan-portal","squ_aa9488007125b09c46e8e2a16a5bccd822738bc2","http")
     duplicate_line_density_expected="15.0"
     assert duplicate_line_density_actual==duplicate_line_density_expected,f"Actual Duplicate Line Density and Expected Duplicate Line Density does not match"
 
 def test_duplicate_lines():
-    actual_duplicate_lines_map=get_duplication_map("localhost:8000","car-loan-portal","squ_aa9488007125b09c46e8e2a16a5bccd822738bc2")
+    actual_duplicate_lines_map=get_duplication_map("localhost:8000","car-loan-portal","squ_aa9488007125b09c46e8e2a16a5bccd822738bc2","http")
     expected_duplicate_lines_map={"app.py":"60"}
     assert actual_duplicate_lines_map==expected_duplicate_lines_map,f"Difference in Hash Map found for Actual Duplicated Line Map and Expected Duplicated Line Map"
 
@@ -57,8 +57,8 @@ def test_path_validation(path_name,case):
     if case=="file_name_wit_pdf":
         assert returned_result=="car-loan-report.pdf","Mismatch in Path found"
     elif case=="invalid_directory_name" or case=="invalid_directory_name_ending_with_pdf":
-        resolved_path=Path.home() / "Downloads" / "generated_sonarqube_report.pdf"
+        resolved_path=Path.home() / "Downloads" / "generated-sonarqube-report.pdf"
         assert returned_result==resolved_path , "Mismatch in Path found"
     elif case=="random":
-        resolved_path=Path.home() / "Desktop" / "generated_sonarqube_report.pdf"
+        resolved_path=Path.home() / "Desktop" / "generated-sonarqube-report.pdf"
         assert returned_result==resolved_path , "Mismatch in Path found"
