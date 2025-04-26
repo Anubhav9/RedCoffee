@@ -16,3 +16,4 @@ TABLE_HEADER_REPORT_SUMMARY = "Report Summary"
 CREATOR_CREDIT=f'RedCoffee : SonarQube reports made easy by <a href="https://github.com/Anubhav9" color="blue">Anubhav9</a>'
 TABLE_HEADER_DUPLICATED_LINES="Number of Duplicated Lines"
 SUBHEADER_DUPLICATION_DOCUMENT="Duplications Detected"
+FALLBACK_FILE_NAME= "generated-sonarqube-report.pdf"
