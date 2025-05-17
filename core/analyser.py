@@ -72,8 +72,7 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name, protoc
             "OK Status code is received , moving on to the next operations")
         return response
     elif (response.status_code != 200):
-        logging.error(f"Error fetching issues from SonarQube: {
-                      response.status_code}")
+        logging.error(f"Error fetching issues from SonarQube: {response.status_code}")
         sonarqube_version, programming_language = get_info_for_sentry_analysis(
             host_name, project_name, auth_token, protocol)
         is_user_token = False
@@ -92,8 +91,7 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name, protoc
             ipinfo_integration.get_user_geo_location())
         sentry_unsuccessful_response = builder.get_data()
         sentry_integration.set_context(sentry_unsuccessful_response)
-        sentry_integration.capture_message(f"Unfortunately, Report Generation failed because {
-                                           constants.SENTRY_GENERAL_UNSUCCESSFUL_MESSAGE}", "error")
+        sentry_integration.capture_message(f"Unfortunately, Report Generation failed because {constants.SENTRY_GENERAL_UNSUCCESSFUL_MESSAGE}", "error")
         sentry_integration.flush()
         return ""
 
@@ -149,8 +147,7 @@ def get_info_for_sentry_analysis(host_name, project_name, auth_token, protocol):
         response_body_version = response_for_sonarqube_version.json()[
             "version"]
     else:
-        logging.info(
-            "Some error occurred while getting SonarQube version. However, this does not impact report generation ")
+        logging.info("Some error occurred while getting SonarQube version. However, this does not impact report generation ")
 
     URL_FOR_MAJOR_LANGUAGE = f"{protocol_type}{
         host_name}/api/measures/component?component={project_name}&metricKeys=ncloc_language_distribution"
@@ -163,8 +160,7 @@ def get_info_for_sentry_analysis(host_name, project_name, auth_token, protocol):
             all_languages_component = all_languages_json.get("component", {})
             all_languages_measures = all_languages_component.get("measures")
             if all_languages_measures is None:
-                logging.info(
-                    "SonarQube API didn't respond with correct standards")
+                logging.info("SonarQube API didn't respond with correct standards")
 
             elif all_languages_measures is not None and len(all_languages_measures) > 0:
                 all_languages = all_languages_measures[0].get("value")
@@ -180,16 +176,13 @@ def get_info_for_sentry_analysis(host_name, project_name, auth_token, protocol):
                             min_val = language_per
                             language = sub_factors[0]
                 else:
-                    logging.info(
-                        "SonarQube API didn't respond with correct standards")
+                    logging.info("SonarQube API didn't respond with correct standards")
         except Exception as e:
-            logging.info(
-                f"Some error occured either while unpacking the json or in the measures array. Exception being thrown is {e}")
+            logging.info(f"Some error occured either while unpacking the json or in the measures array. Exception being thrown is {e}")
             return response_body_version, language
 
     else:
-        logging.info(
-            "Some error occurred while fetching the major programming language. However, this does not impact report generation ")
+        logging.info("Some error occurred while fetching the major programming language. However, this does not impact report generation ")
     return response_body_version, language
 
 
@@ -204,10 +197,8 @@ def get_duplication_density(host_name, project_name, auth_token, protocol):
     auth = HTTPBasicAuth(auth_token, "")
     duplication_response = requests.get(url=DUPLICATION_URL, auth=auth)
     if duplication_response.status_code != 200:
-        logging.info(
-            f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
-        logging.info(
-            "INFO : This would not impact your report generation but duplication % will be defaulted as Zero")
+        logging.info(f"Something went wrong while fetching the duplication count. Recevied status code is : {duplication_response.status_code}")
+        logging.info("INFO : This would not impact your report generation but duplication % will be defaulted as Zero")
         return 0
     else:
         try:
@@ -223,8 +214,7 @@ def get_duplication_density(host_name, project_name, auth_token, protocol):
                     if duplicated_line_density is None:
                         return 0
                     else:
-                        logging.info(f"The duplication % received is :: {
-                                     duplicated_line_density}")
+                        logging.info(f"The duplication % received is :: {duplicated_line_density}")
                         return duplicated_line_density
                 else:
                     return 0
@@ -248,7 +238,6 @@ def generate_final_report_and_transmit_to_sentry(file_path, host_name, project_n
     builder.set_country_of_origin(ipinfo_integration.get_user_geo_location())
     sentry_successful_response_payload = builder.get_data()
     sentry_integration.set_context(sentry_successful_response_payload)
-    sentry_integration.capture_message(
-        "Report has been generated successfully", "info")
+    sentry_integration.capture_message("Report has been generated successfully", "info")
     sentry_integration.flush()
     print("🎉Report Generated Successfully🍻")
