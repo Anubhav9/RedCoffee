@@ -64,8 +64,7 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name, protoc
             ipinfo_integration.get_user_geo_location())
         sentry_unsuccessful_response_payload = builder.get_data()
         sentry_integration.set_context(sentry_unsuccessful_response_payload)
-        sentry_integration.capture_message(f"Unfortunately, Report Generation failed because {
-                                           constants.SENTRY_CONNECTION_UNSUCCESSFUL_MESSAGE}", "error")
+        sentry_integration.capture_message(f"Unfortunately, Report Generation failed because {constants.SENTRY_CONNECTION_UNSUCCESSFUL_MESSAGE}", "error")
         sentry_integration.flush()
         return ""
     if (response.status_code == 200):
