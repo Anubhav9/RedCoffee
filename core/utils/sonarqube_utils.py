@@ -10,8 +10,7 @@ def get_duplication_map(host_name, project_name, auth_token, protocol):
         protocol, host_name)
     if host_name.startswith("http") or host_name.startswith("http"):
         host_name = general_utils.remove_protocol(host_name)
-    DUPLICATION_URL = f"{protocol_type}{
-        host_name}/api/measures/component_tree?component={project_name}&metricKeys=duplicated_lines"
+    DUPLICATION_URL = f"{protocol_type}{host_name}/api/measures/component_tree?component={project_name}&metricKeys=duplicated_lines"
     logging.info(f"Generated Duplication URL is :: {DUPLICATION_URL}")
     auth = HTTPBasicAuth(auth_token, "")
     duplication_response = requests.get(url=DUPLICATION_URL, auth=auth)
