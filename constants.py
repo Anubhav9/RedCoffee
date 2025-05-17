@@ -13,7 +13,9 @@ TABLE_HEADER_SUMMARY_VULNERABILITIES = "Vulnerabilities"
 TABLE_HEADER_SUMMARY_CODE_SMELLS = "Code Smells"
 TABLE_HEADER_SUMMARY_DUPLICATION_PER = "Duplication Percentage"
 TABLE_HEADER_REPORT_SUMMARY = "Report Summary"
-CREATOR_CREDIT=f'RedCoffee : SonarQube reports made easy by <a href="https://github.com/Anubhav9" color="blue">Anubhav9</a>'
-TABLE_HEADER_DUPLICATED_LINES="Number of Duplicated Lines"
-SUBHEADER_DUPLICATION_DOCUMENT="Duplications Detected"
-FALLBACK_FILE_NAME= "generated-sonarqube-report.pdf"
+CREATOR_CREDIT = 'RedCoffee : SonarQube reports made easy by <a href="https://github.com/Anubhav9" color="blue">Anubhav9</a>'
+TABLE_HEADER_DUPLICATED_LINES = "Number of Duplicated Lines"
+SUBHEADER_DUPLICATION_DOCUMENT = "Duplications Detected"
+FALLBACK_FILE_NAME = "generated-sonarqube-report.pdf"
+SENTRY_GENERAL_UNSUCCESSFUL_MESSAGE = "SonarQube Get Issues API call failed"
+SENTRY_CONNECTION_UNSUCCESSFUL_MESSAGE = "Unable to connect to SonarQube Instance"
