@@ -1,5 +1,17 @@
 ## Change Log for RedCoffee
 
+### Version 2.10 ( Released on May 18,2025 )
+* No Changes from a Customer POV. The Code / Repository structure has been modified to segregate components and follow the Single Responsibility Principle.
+* Better adherence to PEP8 structure.
+* Github Actions file added to auto-publish the changes to Pypi and Trigger test run on every commit.
+* Will observe Sentry for potential errors post the code changes
+
+
+### Version 2.9 (Released on April 26,2025)
+* The flags getting used in Click Commands that power the CLI has now been parameterised with field `required` (possible values - True or False) . If the mandatory flags are not passed, CLI execution will throw error then and there itself.
+* Bug Resolution - Observed errors coming due to JSON not being unpackaged correctly and duplication API returning no object inside the key `measures`. Handled both these components safely so that execution does not stop midway.
+* Unit Test Cases Fixed to match the new function style.
+
 ### Version 2.8 (Released on April 5,2025)
 * Saw a lot of errors in Sentry as users were passing the path flag incorrectly. Made code changes to handle the same and also added a fallback mechanism which shall prevent any more failures from happening.
 * Few errors were reported because the API response did not contain the key `line`. The failure is now being handled properly from this version.
