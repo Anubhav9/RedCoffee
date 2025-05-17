@@ -66,6 +66,6 @@ def test_path_validation(path_name, case):
         resolved_path = Path.home() / "Downloads" / "generated-sonarqube-report.pdf"
         assert returned_result == resolved_path, "Mismatch in Path found"
     elif case == "random":
-        print("Hello from Alaska"+ Path.home())
+        print("Hello from Alaska"+ str(Path.home()))
         resolved_path = Path.home() / "Desktop" / "generated-sonarqube-report.pdf"
         assert returned_result == resolved_path, "Mismatch in Path found"
