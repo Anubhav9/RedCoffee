@@ -149,8 +149,7 @@ def get_info_for_sentry_analysis(host_name, project_name, auth_token, protocol):
     else:
         logging.info("Some error occurred while getting SonarQube version. However, this does not impact report generation ")
 
-    URL_FOR_MAJOR_LANGUAGE = f"{protocol_type}{
-        host_name}/api/measures/component?component={project_name}&metricKeys=ncloc_language_distribution"
+    URL_FOR_MAJOR_LANGUAGE = f"{protocol_type}{host_name}/api/measures/component?component={project_name}&metricKeys=ncloc_language_distribution"
     response_for_major_programming_language = requests.get(
         url=URL_FOR_MAJOR_LANGUAGE, auth=auth)
     language = "NOT SET"
@@ -191,8 +190,7 @@ def get_duplication_density(host_name, project_name, auth_token, protocol):
         protocol, host_name)
     if host_name.startswith("http") or host_name.startswith("http"):
         host_name = general_utils.remove_protocol(host_name)
-    DUPLICATION_URL = f"{protocol_type}{
-        host_name}/api/measures/component?component={project_name}&metricKeys=duplicated_lines_density"
+    DUPLICATION_URL = f"{protocol_type}{host_name}/api/measures/component?component={project_name}&metricKeys=duplicated_lines_density"
     logging.info(f"Generated Duplication URL is :: {DUPLICATION_URL}")
     auth = HTTPBasicAuth(auth_token, "")
     duplication_response = requests.get(url=DUPLICATION_URL, auth=auth)
