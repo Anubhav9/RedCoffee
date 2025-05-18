@@ -61,6 +61,7 @@ Please run the following command to generate the PDF Report
 redcoffee generatepdf --host=${YOUR_SONARQUBE_HOST_NAME} --project=${SONARQUBE_PROJECT_KEY} --path=${PATH WHERE PDF FILE IS TO BE STORED} --token=${SONARQUBE_USER_TOKEN}
 ```
 
+
 ## Documentation ( made available via Github Pages )
 
 Please visit the Github Page for this project to stay updated with the latest changes - [Github Page Documentation for RedCoffee](https://anubhav9.github.io/RedCoffee)
