@@ -16,7 +16,7 @@ from integrations.ipinfo_integration import IPInfoIntegration
 
 
 load_dotenv()
-redcoffee_current_version = "v2.12"
+redcoffee_current_version = "v2.15"
 sentry_integration = SentryIntegration(
     os.environ.get("SENTRY_DSN_URL", ""), False, 1.0, 1.0)
 ipinfo_integration = IPInfoIntegration(os.environ.get("IP_INFO_ACCESS_TOKEN", ""))
