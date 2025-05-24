@@ -5,7 +5,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import platform
 from utils.general_utils import handle_protocol_for_every_communication
-from utils import general_utils
+from utils.general_utils import remove_protocol
 import constants
 from reports import templating
 from integrations.sentry_integration import SentryIntegration
@@ -44,7 +44,7 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name, protoc
     protocol_type = handle_protocol_for_every_communication(
         protocol, host_name)
     if host_name.startswith("http") or host_name.startswith("http"):
-        host_name = general_utils.remove_protocol(host_name)
+        host_name = remove_protocol(host_name)
     url_to_hit = protocol_type + host_name + \
         "/api/issues/search?componentKeys=" + project_name + "&resolved=false"
     logging.info(
@@ -137,7 +137,7 @@ def get_info_for_sentry_analysis(host_name, project_name, auth_token, protocol):
     protocol_type = handle_protocol_for_every_communication(
         protocol, host_name)
     if host_name.startswith("http") or host_name.startswith("http"):
-        host_name = general_utils.remove_protocol(host_name)
+        host_name = remove_protocol(host_name)
     URL_FOR_SONARQUBE_VERSION = f"{protocol_type}{host_name}/api/system/status"
     auth = HTTPBasicAuth(auth_token, "")
     response_body_version = "NOT SET"
@@ -189,7 +189,7 @@ def get_duplication_density(host_name, project_name, auth_token, protocol):
     protocol_type = handle_protocol_for_every_communication(
         protocol, host_name)
     if host_name.startswith("http") or host_name.startswith("http"):
-        host_name = general_utils.remove_protocol(host_name)
+        host_name = remove_protocol(host_name)
     DUPLICATION_URL = f"{protocol_type}{host_name}/api/measures/component?component={project_name}&metricKeys=duplicated_lines_density"
     logging.info(f"Generated Duplication URL is :: {DUPLICATION_URL}")
     auth = HTTPBasicAuth(auth_token, "")
