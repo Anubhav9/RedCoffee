@@ -11,14 +11,14 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name='redcoffee',
-    version='2.11',
+    version='2.12',
     author="Anubhav Sanyal",
     description='A command-line tool to generate PDF for SonarQube Reports',
     long_description=README,
     long_description_content_type='text/markdown',
     # Change this if your README is not markdown
     packages=find_packages(),  # Automatically find packages
-    py_modules=['redcoffee', 'styling', 'constants','support','core','integrations','reports','utils'],
+    py_modules=['redcoffee', 'styling', 'constants','support'],
     install_requires=[
         'click',
         'reportlab',
