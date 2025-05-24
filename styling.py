@@ -1,8 +1,7 @@
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
-from reportlab.lib.colors import Color
 from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import TableStyle
 
 styles = getSampleStyleSheet()
 TITLE_STYLE = ParagraphStyle(
