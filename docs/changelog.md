@@ -1,6 +1,6 @@
 ## Change Log for RedCoffee
 
-### Version 2.10 ( Released on May 18,2025 )
+### Version 2.15 ( Released on May 25,2025 )
 * No Changes from a Customer POV. The Code / Repository structure has been modified to segregate components and follow the Single Responsibility Principle.
 * Better adherence to PEP8 structure.
 * Github Actions file added to auto-publish the changes to Pypi and Trigger test run on every commit.
