@@ -1,5 +1,7 @@
 name: Deploy mkdocs to Github Pages
-
+permissions:
+  contents: write
+  
 on:
   push:
     branches:
@@ -25,7 +27,13 @@ jobs:
           pip install mkdocs
           pip install mkdocs-terminal
           
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          
 
       - name: Deploy to Github Pages
         run: |
-          mkdocs gh-deploy  
+          mkdocs gh-deploy --force  
