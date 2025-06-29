@@ -32,15 +32,20 @@ def generatepdf(host, project, path, token, protocol):
         print(warning_for_path_change(resolved_path))
 
 @click.command()
+@click.option("--protocol", type=click.Choice(["http", "https"], case_sensitive=False), required=False,
+              help="The protocol that you want to enforce - HTTP or HTTPS",default=None)
 @click.option("--host", help="The host url where SonarQube server is running", required=True)
 @click.option("--token", help="SonarQube Global Analysis Token", required=True)
-@click.option("--protocol", type=click.Choice(["http", "https"], case_sensitive=False), required=False,
-              help="The protocol that you want to enforce - HTTP or HTTPS")
 def diagnose(protocol,host,token):
     welcome_banner.generate_welcome_banner()
-    new_host = general_utils.remove_protocol(host)
-    new_protocol = general_utils.handle_protocol_for_every_communication(protocol,new_host)
-    sanity.check_all_functioning_parameters(new_protocol,new_host,token)
+    if protocol is None:
+        protocol = general_utils.handle_protocol_for_every_communication(
+        protocol, host)
+    if host.startswith("http") or host.startswith("http"):
+        host = general_utils.remove_protocol(host)
+    host = general_utils.remove_protocol(host)
+    protocol = general_utils.handle_protocol_for_every_communication(protocol,host)
+    sanity.check_all_functioning_parameters(protocol,host,token)
 
 @click.command()
 def support():
