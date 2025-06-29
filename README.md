@@ -81,5 +81,10 @@ Updates as of June 29,2025 - `v2.16`
   
 ![image](https://github.com/user-attachments/assets/340d8095-c530-4cb8-a1b0-6de5a22bb14f)
 
+## Coming Soon
+
+* Ability to email the report , right from the generate command - Users will be able to email the report to the stakeholders right from the generate command. A new flag would be added for the same.
+* Support for Jenkins - While Github Actions is already supported by RedCoffee, support for Jekins was a long due. The next version should have the support for Jenkins available.
+
 
 
