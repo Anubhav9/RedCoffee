@@ -48,3 +48,11 @@ In this case as well, the protocol flag will take the priority.
 Please use the below command
 
 <pre>redcoffee generatepdf --host=${YOUR_SONARQUBE_HOST_NAME} --project=${SONARQUBE_PROJECT_KEY} --path=${PATH WHERE PDF FILE IS TO BE STORED} --token=${SONARQUBE_USER_TOKEN}</pre>
+
+### Latest Command addition in Version 2.16 and above
+
+Pleased to introduce 2 new commands from v2.16 and onwards
+
+`redcoffee diagnose --host={host_name} --token={sonarqube_user_token}` -  This is the healthcheck / sanity command. This makes sures that all the required infra / configurations needed for RedCoffee to be up and running are working fine. If you see something failing over here, its better to cross check the values being supplied.
+
+`redcoffee support` - This is the support command. After running the `redcoffee diagnose` command, if you still could not figure out whats wrong or you need additional support or you might have figured out a bug or you want to request for a new feature, this command provides you with instruction on how to raise it to the maintainer.
