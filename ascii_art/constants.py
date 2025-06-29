@@ -1,0 +1,2 @@
+REDCOFFEE_BANNER_TEXT = "REDCOFFEE"
+REDCOFFEE_SUB_TEXT = "Code Quality.Brewed Instantly"
