@@ -8,7 +8,7 @@ from utils.general_utils import handle_protocol_for_every_communication
 def get_duplication_map(host_name, project_name, auth_token, protocol):
     protocol_type = handle_protocol_for_every_communication(
         protocol, host_name)
-    if host_name.startswith("http") or host_name.startswith("http"):
+    if host_name.startswith("http") or host_name.startswith("https"):
         host_name = general_utils.remove_protocol(host_name)
     DUPLICATION_URL = f"{protocol_type}{host_name}/api/measures/component_tree?component={project_name}&metricKeys=duplicated_lines"
     logging.info(f"Generated Duplication URL is :: {DUPLICATION_URL}")
