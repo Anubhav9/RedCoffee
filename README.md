@@ -69,7 +69,7 @@ Please visit the Github Page for this project to stay updated with the latest ch
 
 ## Latest Updates
 
-Updates as of June 29,2025 ( v2.16 )
+Updates as of June 29,2025 - `v2.16`
 
 2 new commands have been added
 
