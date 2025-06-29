@@ -79,7 +79,7 @@ def create_redcoffee_report_directory():
     Create the redcoffee-reports directory
     """
     try:
-        redcoffee_report_directory = os.mkdir(os.path.join(Path.home(),"redcoffee-reports"),exist_ok=True)
+        os.makedirs(os.path.join(Path.home(), "redcoffee-reports"), exist_ok=True)
     except Exception as e:
         logging.info(f"Error creating redcoffee-reports directory: {e}")
     
