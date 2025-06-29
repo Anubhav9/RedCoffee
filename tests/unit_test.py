@@ -63,7 +63,7 @@ def test_path_validation(path_name, case):
     if case == "file_name_wit_pdf":
         assert returned_result == "car-loan-report.pdf", "Mismatch in Path found"
     elif case == "invalid_directory_name" or case == "invalid_directory_name_ending_with_pdf":
-        resolved_path = Path.home() / "Downloads" / "generated-sonarqube-report.pdf"
+        resolved_path = Path.home() / "redcoffee-reports" / "generated-sonarqube-report.pdf"
         assert returned_result == resolved_path, "Mismatch in Path found"
     elif case == "random":
         print("Hello from Alaska"+ str(Path.home()))
