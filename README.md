@@ -26,6 +26,7 @@ Directory               | Usage                                    |
 `reports`                 | Controls the stuff related to look and feel of the generated reports. <br> i)`templating.py` - Code containing the structure of the report. <br> ii) `utils` - Code / Utility functions  essential for the report templating to be up and running. |
 `utils`                   | General Utility Functions. 
 `tests`                   | Contains the Unit Tests. |
+`ascii_art`               | Contains the logic for the Welcome Banner. |
 
 Files                     |    Usage                             |
 --------------------------|---------------------------------------|
@@ -65,4 +66,25 @@ redcoffee generatepdf --host=${YOUR_SONARQUBE_HOST_NAME} --project=${SONARQUBE_P
 ## Documentation ( made available via Github Pages )
 
 Please visit the Github Page for this project to stay updated with the latest changes - [Github Page Documentation for RedCoffee](https://anubhav9.github.io/RedCoffee)
+
+## Latest Updates
+
+Updates as of June 29,2025 - `v2.16`
+
+2 new commands have been added
+
+* `redcoffee support` - If you encounter a bug or you feel RedCoffee is not working as expected or you want to raise a new feature request, `redcoffee support` command will guide on how to reach out to the maintener of this project.
+
+![image](https://github.com/user-attachments/assets/019f262e-9527-499e-a05b-1b62f70ba135)
+
+* `redcoffee diagnose --host={host_name} --token={sonarqube_usertoken} ` - This is the basic healthcheck / sanity command. This helps you to diagnose if the required infra / configurations required for RedCoffee to be up and running are working fine or not. In case, you see something is failing in this command, I would please request to cross check the parameters being supplied. In case, it is still failing, please use the `redcoffee support` command to raise this issue to the maintener of this project
+  
+![image](https://github.com/user-attachments/assets/340d8095-c530-4cb8-a1b0-6de5a22bb14f)
+
+## Coming Soon
+
+* Ability to email the report , right from the generate command - Users will be able to email the report to the stakeholders right from the generate command. A new flag would be added for the same.
+* Support for Jenkins - While Github Actions is already supported by RedCoffee, support for Jekins was a long due. The next version should have the support for Jenkins available.
+
+
 

@@ -1,0 +1,2 @@
+REDCOFFEE_BANNER_TEXT = "REDCOFFEE"
+REDCOFFEE_SUB_TEXT = "\t\tCode Quality.Brewed Instantly"

@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from urllib.parse import urlparse
 import constants
-
+import os
 
 def check_and_validate_file_path(path):
     """
@@ -12,7 +12,8 @@ def check_and_validate_file_path(path):
         path: The file path being provided by the user
     """
     if path is None:
-        resolved_directory = Path.home() / "Downloads" / constants.FALLBACK_FILE_NAME
+        create_redcoffee_report_directory()
+        resolved_directory = Path.home() / "redcoffee-reports" / constants.FALLBACK_FILE_NAME
         return resolved_directory
 
     else:
@@ -30,9 +31,8 @@ def check_and_validate_file_path(path):
                 resolved_directory = path
                 return resolved_directory
             else:
-                logging.info(
-                    "Path does not exists, we will fallback to defaults")
-                resolved_directory = Path.home() / "Downloads" / constants.FALLBACK_FILE_NAME
+                create_redcoffee_report_directory()
+                resolved_directory = Path.home() / "redcoffee-reports" / constants.FALLBACK_FILE_NAME
                 return resolved_directory
 
 
@@ -72,3 +72,15 @@ def remove_protocol(url):
     """
     parsed_url = urlparse(url)
     return parsed_url.netloc + parsed_url.path
+
+
+def create_redcoffee_report_directory():
+    """
+    Create the redcoffee-reports directory
+    """
+    try:
+        os.makedirs(os.path.join(Path.home(), "redcoffee-reports"), exist_ok=True)
+    except Exception as e:
+        logging.info(f"Error creating redcoffee-reports directory: {e}")
+    
+    
