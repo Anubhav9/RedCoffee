@@ -26,7 +26,7 @@ Directory               | Usage                                    |
 `reports`                 | Controls the stuff related to look and feel of the generated reports. <br> i)`templating.py` - Code containing the structure of the report. <br> ii) `utils` - Code / Utility functions  essential for the report templating to be up and running. |
 `utils`                   | General Utility Functions. 
 `tests`                   | Contains the Unit Tests. |
-`ascii_art`               | Contains the logic for the Welcome Banner |
+`ascii_art`               | Contains the logic for the Welcome Banner. |
 
 Files                     |    Usage                             |
 --------------------------|---------------------------------------|
