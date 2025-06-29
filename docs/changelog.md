@@ -1,5 +1,13 @@
 ## Change Log for RedCoffee
 
+### Version 2.16 ( Released on June 29,2025):
+* Inclusion of a new command : `redcoffee diagnose` - This does a sanity check whether the required infra/parameters needed by RedCoffee is up and running or not. This checks for SonarQube Connectivity and validity / authenticity of the provided SonarQube Token (which ideally should be the SonarQube user token). The user can get a hint of what is wrong with RedCoffee post running this command.
+* Inclusion of a new command : `redcoffee support`- This encourages the end user to create a Github Issue in case they feel something is wrong with RedCoffee and needs an urgent attention. Alternatively, the maintener's email has been given as well , incase , someone wants to reach out directly.
+* Addition of a new ASCII Banner. Users will be greeted with this ASCII art when they run any commands of RedCoffee.
+* Bug Fix - Saw errors on Sentry regarding Invalid Path Supplied. This was happening because when no path was supplied, RedCoffee was trying to create reports in Downloads Directory. However, we were not checking if Downloads directory exists or not. Added the code to create a new directory called `redcoffee-reports` where RedCoffee reports will be stored in case user does not supply the required path.
+* Minor Bug Fix - An if condition in the code was incorrect. This was however not creating any issues. But fixed it just in case.
+
+
 ### Version 2.15 ( Released on May 25,2025 )
 * No Changes from a Customer POV. The Code / Repository structure has been modified to segregate components and follow the Single Responsibility Principle.
 * Better adherence to PEP8 structure.
