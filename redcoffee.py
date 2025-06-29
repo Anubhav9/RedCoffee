@@ -38,13 +38,10 @@ def generatepdf(host, project, path, token, protocol):
 @click.option("--token", help="SonarQube Global Analysis Token", required=True)
 def diagnose(protocol,host,token):
     welcome_banner.generate_welcome_banner()
-    if protocol is None:
-        protocol = general_utils.handle_protocol_for_every_communication(
+    protocol = general_utils.handle_protocol_for_every_communication(
         protocol, host)
-    if host.startswith("http") or host.startswith("http"):
+    if host.startswith("http") or host.startswith("https"):
         host = general_utils.remove_protocol(host)
-    host = general_utils.remove_protocol(host)
-    protocol = general_utils.handle_protocol_for_every_communication(protocol,host)
     sanity.check_all_functioning_parameters(protocol,host,token)
 
 @click.command()
