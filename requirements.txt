@@ -7,3 +7,5 @@ sentry_sdk==2.22.0
 setuptools==75.1.0
 python-dotenv
 mkdocs
+pyfiglet
+colorama
