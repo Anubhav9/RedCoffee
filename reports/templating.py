@@ -164,7 +164,7 @@ def issue_summary_overview(bug_list, vulnerability_list, code_smell_list, duplic
 def create_issues_report(file_path, host_name, auth_token, project_name, protocol):
     response = analyser.get_reported_issues_by_sonarqube(
         host_name, auth_token, project_name, protocol)
-    if (response == ""):
+    if not response:
         logging.info(
             "We are sorry, we're having trouble generating your report")
         print("We are sorry, we're having trouble generating your report")
