@@ -6,6 +6,7 @@ from requests.auth import HTTPBasicAuth
 import platform
 from utils.general_utils import handle_protocol_for_every_communication
 from utils.general_utils import remove_protocol
+from core.webservice import WebService
 import constants
 from reports import templating
 from integrations.sentry_integration import SentryIntegration
@@ -36,21 +37,16 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name, protoc
     The response of the SonarQube API
 
     """
-    logging.debug("Auth token being used is :: " + auth_token)
-    sqa_headers = {"Authorization": "Basic " + auth_token}
-    auth = HTTPBasicAuth(auth_token, "")
-    logging.debug("Bearer Token being passed is :: " + str(sqa_headers))
     # First Priority goes to protocol supplied, if any
     protocol_type = handle_protocol_for_every_communication(
         protocol, host_name)
     if host_name.startswith("http") or host_name.startswith("http"):
         host_name = remove_protocol(host_name)
-    url_to_hit = protocol_type + host_name + \
-        "/api/issues/search?componentKeys=" + project_name + "&resolved=false"
-    logging.info(
-        "URL that has we are hitting to fetch SonarQube reports are " + url_to_hit)
+
     try:
-        response = requests.get(url=url_to_hit, auth=auth)
+        webservice = WebService(auth_token, protocol_type, host_name, project_name)
+        total, page_size = webservice.get_total_issues(webservice.get_unresolved_issues)
+        response_list, status_code = webservice.get_all_unresolved_issues(total, page_size)
     except Exception:
         print(
             "We are sorry, we're unable to establish connection with your SonarQube Instance. Please recheck if you have provided the correct host name & port and protocol (if applicable)")
@@ -67,12 +63,12 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name, protoc
         sentry_integration.capture_message(f"Unfortunately, Report Generation failed because {constants.SENTRY_CONNECTION_UNSUCCESSFUL_MESSAGE}", "error")
         sentry_integration.flush()
         return ""
-    if (response.status_code == 200):
+    if (status_code == 200):
         logging.debug(
             "OK Status code is received , moving on to the next operations")
-        return response
-    elif (response.status_code != 200):
-        logging.error(f"Error fetching issues from SonarQube: {response.status_code}")
+        return response_list
+    elif (status_code != 200):
+        logging.error(f"Error fetching issues from SonarQube: {status_code}")
         sonarqube_version, programming_language = get_info_for_sentry_analysis(
             host_name, project_name, auth_token, protocol)
         is_user_token = False
@@ -85,7 +81,7 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name, protoc
         builder.set_sonarqube_version(sonarqube_version)
         builder.set_operating_system(platform.system())
         builder.set_major_programming_language(programming_language)
-        builder.set_response_code(response.status_code)
+        builder.set_response_code(status_code)
         builder.set_is_user_token(is_user_token)
         builder.set_country_of_origin(
             ipinfo_integration.get_user_geo_location())
@@ -96,14 +92,14 @@ def get_reported_issues_by_sonarqube(host_name, auth_token, project_name, protoc
         return ""
 
 
-def get_issues_by_type(response, issue_type):
+def get_issues_by_type(response_list: list, issue_type):
     """
     This function filters the component to be fixed , what needs to be fixed
     , the line number where fix needs to be made , severity of the issue based on
     the issue type as passed in the argument.
 
     Argument
-    response - The API response of SonarQube
+    response_list - The API response(s) of SonarQube
     isse_type_list - The type of issue that needs to be filtered
 
     Returns
@@ -116,20 +112,21 @@ def get_issues_by_type(response, issue_type):
     line_number = []
     impact = []
     issue_type_list = []
-    response_body = response.json()
-
-    for i in range(0, len(response_body["issues"])):
-        actual_issue_type = response_body["issues"][i]["type"]
-        if (actual_issue_type == issue_type):
-            component_list.append(response_body["issues"][i]["component"])
-            fix_list.append(response_body["issues"][i]["message"])
-            line_number_get = response_body["issues"][i].get("line")
-            if line_number_get is not None:
-                line_number.append(line_number_get)
-            else:
-                line_number.append("NA")
-            impact.append(response_body["issues"][i]["severity"])
-            issue_type_list.append(issue_type)
+    
+    for response in response_list:
+        response_body = response.json()
+        for i in range(0, len(response_body["issues"])):
+            actual_issue_type = response_body["issues"][i]["type"]
+            if (actual_issue_type == issue_type):
+                component_list.append(response_body["issues"][i]["component"])
+                fix_list.append(response_body["issues"][i]["message"])
+                line_number_get = response_body["issues"][i].get("line")
+                if line_number_get is not None:
+                    line_number.append(line_number_get)
+                else:
+                    line_number.append("NA")
+                impact.append(response_body["issues"][i]["severity"])
+                issue_type_list.append(issue_type)
     return component_list, fix_list, line_number, impact, issue_type_list
 
 
